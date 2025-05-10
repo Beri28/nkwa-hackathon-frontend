@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { 
-  UserPlus, Users, Coins, Calendar, Award, User, Check, 
+  UserPlus, Coins, Award, User, Check, 
   Clock, RotateCw, ArrowLeft, X, ChevronDown 
 } from 'lucide-react';
 
@@ -360,29 +360,8 @@ const AssociationManagement = () => {
       </div>
       
       <div className="p-6">
+
         <div className="space-y-6">
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">Full Name</label>
-            <input
-              type="text"
-              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-black focus:border-black"
-              value={newMember.name}
-              onChange={(e) => setNewMember({...newMember, name: e.target.value})}
-              placeholder="Enter member's full name"
-            />
-          </div>
-          
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">Email Address</label>
-            <input
-              type="email"
-              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-black focus:border-black"
-              value={newMember.email}
-              onChange={(e) => setNewMember({...newMember, email: e.target.value})}
-              placeholder="Enter member's email"
-            />
-          </div>
-          
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-1">Phone Number</label>
             <input
