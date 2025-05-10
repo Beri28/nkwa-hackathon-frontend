@@ -30,6 +30,7 @@ function App() {
     <AuthProvider>
       {/* <PayPalStylePayment/> */}
       {/* <PhoneQRGenerator/> */}
+      <HomeScreen/>
       <BrowserRouter>
         <Routes>
           <Route path='/' element={<HomeScreen/>} />
