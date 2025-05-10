@@ -1,11 +1,11 @@
-import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
+import { createContext, useContext, useState, useEffect, ReactNode } from 'react';
 
 // Define types for auth context
 type AuthContextType = {
   user: User | null;
   login: (userData: User) => void;
+  updateUser: (userData: User) => void;
   logout: () => void;
-  isAuthenticated: boolean;
   loading: boolean;
 };
 type WithdrawalsMade = {
@@ -25,7 +25,7 @@ type PaymentsMade = {
   status:'pending'|'success'|'failed'
 }
 type personalAccount ={
-  id:string
+  _id:string
   userId:string,
   balance:number,
   withdrawalsMade:WithdrawalsMade;
@@ -33,10 +33,11 @@ type personalAccount ={
   paymentsReceived:PaymentsMade;
 }
 
-type User = {
+export type User = {
   id: string;
   username: string;
-  email: string;
+  phoneNumber: number;
+  isAuthenticated: boolean;
   token: string;
   personalAccount:personalAccount;
   merchantAccount:personalAccount
@@ -46,15 +47,17 @@ type User = {
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
 // Auth Provider Component
-export const AuthProvider = ({ children }: { children: ReactNode }) => {
+const AuthProvider = ({ children }: { children: ReactNode }) => {
   const [user, setUser] = useState<User | null>(null);
   const [loading, setLoading] = useState(true);
 
+  
   // Initialize auth state (e.g., check localStorage)
   useEffect(() => {
     let storedUser = localStorage.getItem('njanbiz');
     console.log(storedUser)
-    storedUser=JSON.stringify(storedUser)
+    // storedUser=JSON.parse(storedUser || "")
+    // console.log(storedUser)
     if (storedUser) {
       setUser(JSON.parse(storedUser));
     }
@@ -62,6 +65,12 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   }, []);
 
   const login = (userData: User) => {
+    console.log(userData)
+    setUser(userData);
+    localStorage.setItem('njanbiz', JSON.stringify(userData));
+  };
+  const updateUser = (userData: User) => {
+    console.log(userData)
     setUser(userData);
     localStorage.setItem('njanbiz', JSON.stringify(userData));
   };
@@ -71,10 +80,10 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     localStorage.removeItem('njanbiz');
   };
 
-  const isAuthenticated = !!user;
+  // const isAuthenticated = !!user;
 
   return (
-    <AuthContext.Provider value={{ user, login, logout, isAuthenticated, loading }}>
+    <AuthContext.Provider value={{ user, login, logout,updateUser, loading }}>
       {children}
     </AuthContext.Provider>
   );
@@ -88,3 +97,5 @@ export const useAuth = () => {
   }
   return context;
 };
+
+export default AuthProvider

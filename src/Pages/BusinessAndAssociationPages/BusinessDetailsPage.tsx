@@ -1,4 +1,4 @@
-import React, { useState, useRef } from 'react';
+import { useState } from 'react';
 import { QrCode, ArrowLeft, Download, ArrowUpRight, ArrowDownLeft, Clock, History, Settings, Share2 } from 'lucide-react';
 
 const BusinessDetailsPage = () => {
@@ -7,7 +7,7 @@ const BusinessDetailsPage = () => {
   const [balance, setBalance] = useState(12500.50);
   const [withdrawAmount, setWithdrawAmount] = useState('');
   const [activeTab, setActiveTab] = useState('transactions');
-  const withdrawDialogRef = useRef<HTMLDialogElement>(null);
+  // const withdrawDialogRef = useRef<HTMLDialogElement>(null);
 
   // Mock transaction data
   const transactions = [

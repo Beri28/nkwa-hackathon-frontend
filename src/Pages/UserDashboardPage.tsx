@@ -1,12 +1,18 @@
-import React, { useState, useRef } from 'react';
+import { useState, } from 'react';
 import { QrCode, ArrowLeft, Download, ArrowUpRight, ArrowDownLeft, Clock, History, Settings, Share2, User } from 'lucide-react';
+import { useAuth } from '../Context/Auth-Context';
+import { Link, useNavigate } from 'react-router-dom';
+import { QRCodeCanvas } from 'qrcode.react';
+import { baseUrl } from '../App';
 
 const UserDashboardPage = () => {
+  const {user}=useAuth()
   const [showQrModal, setShowQrModal] = useState(false);
   const [showWithdrawModal, setShowWithdrawModal] = useState(false);
   const [balance, setBalance] = useState(8500.75);
   const [withdrawAmount, setWithdrawAmount] = useState('');
   const [activeTab, setActiveTab] = useState('transactions');
+  const navigate=useNavigate()
 
   // Mock transaction data
   const transactions = [
@@ -27,16 +33,35 @@ const UserDashboardPage = () => {
       alert('Please enter a valid amount');
     }
   };
+  const downloadQrCode = () => {
+    try {
+      const canvas = document.getElementById('phoneQrCode') as HTMLCanvasElement;
+      if (!canvas) throw new Error('QR Code not found');
+      
+      const pngUrl = canvas.toDataURL('image/png');
+      const downloadLink = document.createElement('a');
+      downloadLink.href = pngUrl;
+      downloadLink.download = `qr-237-$&&#789___.png`;
+      document.body.appendChild(downloadLink);
+      downloadLink.click();
+      document.body.removeChild(downloadLink);
+    } catch (error) {
+      console.error('Download error:', error);
+      alert('Failed to download QR code');
+    }
+  };
 
   return (
     <div className="min-h-screen bg-gray-50">
       {/* Header */}
       <header className="bg-white shadow-sm">
         <div className="container mx-auto px-4 py-4 flex items-center justify-between">
-          <button className="flex items-center text-gray-700">
-            <ArrowLeft className="mr-2" size={20} />
-            Back
-          </button>
+          <Link to="/">
+            <button className="flex items-center text-gray-700">
+              <ArrowLeft className="mr-2" size={20} />
+              Back
+            </button>
+          </Link>
           <h1 className="text-xl font-bold text-gray-900">My Dashboard</h1>
           <button className="text-gray-700">
             <Settings size={20} />
@@ -54,7 +79,7 @@ const UserDashboardPage = () => {
                 <User size={24} />
               </div>
               <div>
-                <h2 className="text-xl font-bold text-gray-900">John Doe</h2>
+                <h2 className="text-xl font-bold text-gray-900">{user?.username}</h2>
                 <p className="text-gray-600">Personal Account</p>
               </div>
             </div>
@@ -69,38 +94,34 @@ const UserDashboardPage = () => {
           {/* Balance Card */}
           <div className="bg-black rounded-lg p-6 text-white mb-6">
             <p className="text-sm font-medium mb-1">Available Balance</p>
-            <h3 className="text-3xl font-bold mb-2">{balance.toLocaleString()} FCFA</h3>
+            <h3 className="text-3xl font-bold mb-2">{user?.personalAccount && user?.personalAccount.balance} FCFA</h3>
             <p className="text-blue-100 text-sm">Last updated: Today</p>
           </div>
 
           {/* Quick Actions */}
           <div className="grid grid-cols-4 gap-3 mb-6">
-            <button className="flex flex-col items-center justify-center p-3 bg-gray-50 rounded-lg hover:bg-gray-100 transition-colors">
+            {/* <button className="flex flex-col items-center justify-center p-3 bg-gray-50 rounded-lg hover:bg-gray-100 transition-colors">
               <div className="bg-blue-100 p-2 rounded-full text-blue-600 mb-2">
                 <ArrowDownLeft size={18} />
               </div>
               <span className="text-xs font-medium">Receive</span>
-            </button>
-
+            </button> */}
             <button 
-              onClick={() => setShowWithdrawModal(true)}
+              onClick={() => navigate('/transfer')}
               className="flex flex-col items-center justify-center p-3 bg-gray-50 rounded-lg hover:bg-gray-100 transition-colors"
             >
               <div className="bg-green-100 p-2 rounded-full text-green-600 mb-2">
                 <ArrowUpRight size={18} />
               </div>
-              <span className="text-xs font-medium">Send</span>
+              <span className="text-xs font-medium">Pay</span>
             </button>
-
-
-            <button className="flex flex-col items-center justify-center p-3 bg-gray-50 rounded-lg hover:bg-gray-100 transition-colors">
+            {/* <button className="flex flex-col items-center justify-center p-3 bg-gray-50 rounded-lg hover:bg-gray-100 transition-colors">
               <div className="bg-purple-100 p-2 rounded-full text-purple-600 mb-2">
                 <Share2 size={18} />
               </div>
               <span className="text-xs font-medium">Pay</span>
-            </button>
- 
-            <button className="flex flex-col items-center justify-center p-3 bg-gray-50 rounded-lg hover:bg-gray-100 transition-colors">
+            </button> */}
+            <button onClick={() => navigate('/topUp')} className="flex flex-col items-center justify-center p-3 bg-gray-50 rounded-lg hover:bg-gray-100 transition-colors">
               <div className="bg-yellow-100 p-2 rounded-full text-yellow-600 mb-2">
                 <Download size={18} />
               </div>
@@ -184,11 +205,19 @@ const UserDashboardPage = () => {
             </div>
             <div className="bg-gray-100 p-8 rounded-lg flex justify-center mb-4">
               <div className="bg-white p-4 rounded">
-                <QrCode size={128} className="text-gray-800" />
+                {/* <QrCode size={128} className="text-gray-800" /> */}
+                <QRCodeCanvas
+                  id="phoneQrCode"
+                  value={`${baseUrl}/${user?.phoneNumber}-${user?.id}`}
+                  size={180}
+                  level="H"
+                  fgColor="#1f2937"
+                  bgColor="#ffffff"
+                />
               </div>
             </div>
             <p className="text-center text-gray-600 mb-4">Share this code to receive money</p>
-            <button className="w-full py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors flex items-center justify-center">
+            <button onClick={downloadQrCode} className="w-full py-2 bg-black text-white rounded-lg hover:bg-gray-400 transition-colors flex items-center justify-center">
               <Download className="mr-2" size={18} />
               Save QR Code
             </button>
