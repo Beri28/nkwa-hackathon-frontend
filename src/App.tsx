@@ -27,6 +27,7 @@ function App() {
       {/* <PayPalStylePayment/> */}
       {/* <PhoneQRGenerator/> */}
       {/* <HomeScreen/> */}
+      <HomeScreen/>
       <BrowserRouter>
         <Routes>
           <Route path='/' element={<HomeScreen/>} />
